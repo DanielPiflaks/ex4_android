@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class ImageService extends Service {
     private BroadcastReceiver yourReceiver;
     private TCPClient tcpClient;
-    private  PhotosDirectoryHandler photosDirectoryHandler;
+    private PhotosDirectoryHandler photosDirectoryHandler;
 
     @Override
     public void onCreate() {
@@ -39,7 +39,7 @@ public class ImageService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this,"Service ending...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Service ending...", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -49,7 +49,7 @@ public class ImageService extends Service {
         return null;
     }
 
-    public void broadcastOnEvent(){
+    public void broadcastOnEvent() {
         final IntentFilter theFilter = new IntentFilter();
         theFilter.addAction("android.net.wifi.supplicant.CONNECTION_CHANGE");
         theFilter.addAction("android.net.wifi.STATE_CHANGE");
@@ -62,7 +62,7 @@ public class ImageService extends Service {
                     if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                         //get the different network states
                         if (networkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                            startTransfer();            // Starting the Transfer
+                            startTransfer(context);            // Starting the Transfer
                         }
                     }
                 }
@@ -72,31 +72,39 @@ public class ImageService extends Service {
     }
 
 
-    public void startTransfer(){
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default");
-        final int notify_id = 1;
-        final NotificationManager NM = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+    public void startTransfer(Context context) {
+//        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
+//        final int notify_id = 1;
+//        final NotificationManager NM = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        builder.setContentTitle("Download Status...");
+//        builder.setContentText("Download in progress");
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                int icr;
+//                for (icr = 0; icr <= 100; icr += 5) {
+//                    builder.setProgress(100, icr, false);
+//                    NM.notify(notify_id, builder.build());
+//                    try {
+//                        Thread.sleep(2 * 1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                builder.setProgress(0, 0, false);
+//                builder.setContentText("Download Complete...");
+//                NM.notify(notify_id, builder.build());
+//            }
+//        }).start();
+
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
+        final NotificationManager NM = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         builder.setSmallIcon(R.drawable.ic_launcher_background);
-        builder.setContentTitle("Download Status...");
-        builder.setContentText("Download in progress");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int icr;
-                for (icr = 0; icr <=100; icr+=5){
-                    builder.setProgress(100, icr, false);
-                    NM.notify(notify_id, builder.build());
-                    try {
-                        Thread.sleep(2*1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                builder.setProgress(0, 0, false);
-                builder.setContentText("Download Complete...");
-                NM.notify(notify_id, builder.build());
-            }
-        }).start();
+        builder.setContentTitle("Transferring all images...");
+        builder.setContentText("Transferring in progress...");
+
+        this.tcpClient.setNm(NM);
+        this.tcpClient.setBuilder(builder);
         Thread thread = new Thread(this.tcpClient);
         thread.start();
     }
