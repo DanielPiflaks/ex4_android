@@ -97,7 +97,7 @@ public class TCPClient implements Runnable {
                 barState = barState + 100 / numberOfFiles;
                 this.builder.setProgress(100, barState, false);
                 this.nm.notify(notify_id, builder.build());
-            }
+            }//
             output.flush();
             //Set progress bar to end.
             this.builder.setProgress(0, 0, false);

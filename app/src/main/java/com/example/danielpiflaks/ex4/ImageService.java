@@ -99,6 +99,7 @@ public class ImageService extends Service {
      * Start the transfer.
      */
     public void startTransfer(Context context) {
+        //
         //Create progress bar.
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
         final NotificationManager NM = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
